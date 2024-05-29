@@ -4,4 +4,4 @@ mkdir -p build && cd build
 cmake ..
 cmake --build .
 
-ctest
+./test/test_matrix_multiplication
