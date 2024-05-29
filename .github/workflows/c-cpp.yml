@@ -61,7 +61,7 @@ jobs:
 
     - name: Build Singularity image
       run: |
-        singularity build matrix_multiplication.sif Singularity.def
+        singularity build matrix_multiplication.sif $GITHUB_WORKSPACE/Singularity.def
 
     - name: Run tests in Singularity container
       run: |
@@ -95,7 +95,7 @@ jobs:
 
     - name: Build Singularity image
       run: |
-        singularity build matrix_multiplication.sif Singularity.def
+        singularity build matrix_multiplication.sif $GITHUB_WORKSPACE/Singularity.def
 
     - name: Create a release
       id: create_release
