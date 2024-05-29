@@ -1,34 +1,9 @@
-# name: C/C++ CI
-
-# on:
-#   push:
-#     branches: [ "main" ]
-#   pull_request:
-#     branches: [ "main" ]
-
-# jobs:
-#   build:
-
-#     runs-on: ubuntu-latest
-
-#     steps:
-#     - uses: actions/checkout@v4
-#     - name: configure
-#       run: ./configure
-#     - name: make
-#       run: make
-#     - name: make check
-#       run: make check
-#     - name: make distcheck
-#       run: make distcheck
-
-name: CI/CD Pipeline
+name: CI Pipeline
 
 on:
   push:
     branches:
       - main
-      - 'release/*'
   pull_request:
     branches:
       - main
@@ -38,81 +13,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Set up Singularity
-      run: |
-        sudo apt-get update && sudo apt-get install -y build-essential \
-          libseccomp-dev pkg-config squashfs-tools cryptsetup runc \
-          fuse3 libfuse3-dev libfuse-dev
+      - name: Set up C++ environment
+        uses: shivammathur/setup-cpp@v1
+        with:
+          compiler: clang
 
-        # Install Go
-        wget https://golang.org/dl/go1.16.5.linux-amd64.tar.gz
-        sudo tar -C /usr/local -xzf go1.16.5.linux-amd64.tar.gz
-        export PATH=$PATH:/usr/local/go/bin
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake libgtest-dev
+          cd /usr/src/gtest
+          sudo cmake CMakeLists.txt
+          sudo make
+          sudo cp *.a /usr/lib
 
-        # Clone Singularity with submodules
-        git clone --recurse-submodules https://github.com/sylabs/singularity.git
-        cd singularity
-        ./mconfig
-        make -C builddir
-        sudo make -C builddir install
+      - name: Build the library
+        run: |
+          mkdir -p build
+          cd build
+          cmake ..
+          make
 
-    - name: Build Singularity image
-      run: |
-        singularity build matrix_multiplication.sif $GITHUB_WORKSPACE/Singularity.def
+      - name: Build the main program
+        run: |
+          clang++ -std=c++17 -o main src/main.cpp -L./lib -lmatrix_multiplication_without_errors
 
-    - name: Run tests in Singularity container
-      run: |
-        singularity exec matrix_multiplication.sif ./build/test/test_matrix_multiplication
-
-  release:
-    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/release/')
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-
-    - name: Set up Singularity
-      run: |
-        sudo apt-get update && sudo apt-get install -y build-essential \
-          libseccomp-dev pkg-config squashfs-tools cryptsetup runc \
-          fuse3 libfuse3-dev libfuse-dev
-
-        # Install Go
-        wget https://golang.org/dl/go1.16.5.linux-amd64.tar.gz
-        sudo tar -C /usr/local -xzf go1.16.5.linux-amd64.tar.gz
-        export PATH=$PATH:/usr/local/go/bin
-
-        # Clone Singularity with submodules
-        git clone --recurse-submodules https://github.com/sylabs/singularity.git
-        cd singularity
-        ./mconfig
-        make -C builddir
-        sudo make -C builddir install
-
-    - name: Build Singularity image
-      run: |
-        singularity build matrix_multiplication.sif $GITHUB_WORKSPACE/Singularity.def
-
-    - name: Create a release
-      id: create_release
-      uses: actions/create-release@v1
-      with:
-        tag_name: ${{ github.sha }}
-        release_name: Release ${{ github.sha }}
-        draft: false
-        prerelease: false
-        body: |
-          Automated release created for commit ${{ github.sha }}
-
-    - name: Upload Singularity image
-      uses: actions/upload-release-asset@v1
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./matrix_multiplication.sif
-        asset_name: matrix_multiplication.sif
-        asset_content_type: application/octet-stream
-
+      - name: Run tests
+        run: |
+          ./build/test/test_matrix_multiplication
