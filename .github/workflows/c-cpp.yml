@@ -43,15 +43,19 @@ jobs:
 
     - name: Set up Singularity
       run: |
-        sudo apt-get update && sudo apt-get install -y wget build-essential \
-          libseccomp-dev pkg-config squashfs-tools cryptsetup
-        
-        export VERSION=3.10.2 && # adjust this as necessary \
-        wget https://github.com/sylabs/singularity/releases/download/v$VERSION/singularity-$VERSION.tar.gz && \
-        tar -xzf singularity-$VERSION.tar.gz && \
-        cd singularity-$VERSION && \
-        ./mconfig && \
-        make -C builddir && \
+        sudo apt-get update && sudo apt-get install -y build-essential \
+          libseccomp-dev pkg-config squashfs-tools cryptsetup runc
+
+        # Install Go
+        wget https://golang.org/dl/go1.16.5.linux-amd64.tar.gz
+        sudo tar -C /usr/local -xzf go1.16.5.linux-amd64.tar.gz
+        export PATH=$PATH:/usr/local/go/bin
+
+        # Clone Singularity
+        git clone https://github.com/sylabs/singularity.git
+        cd singularity
+        ./mconfig
+        make -C builddir
         sudo make -C builddir install
 
     - name: Build Singularity image
@@ -72,15 +76,19 @@ jobs:
 
     - name: Set up Singularity
       run: |
-        sudo apt-get update && sudo apt-get install -y wget build-essential \
-          libseccomp-dev pkg-config squashfs-tools cryptsetup
-        
-        export VERSION=3.10.2 && # adjust this as necessary \
-        wget https://github.com/sylabs/singularity/releases/download/v$VERSION/singularity-$VERSION.tar.gz && \
-        tar -xzf singularity-$VERSION.tar.gz && \
-        cd singularity-$VERSION && \
-        ./mconfig && \
-        make -C builddir && \
+        sudo apt-get update && sudo apt-get install -y build-essential \
+          libseccomp-dev pkg-config squashfs-tools cryptsetup runc
+
+        # Install Go
+        wget https://golang.org/dl/go1.16.5.linux-amd64.tar.gz
+        sudo tar -C /usr/local -xzf go1.16.5.linux-amd64.tar.gz
+        export PATH=$PATH:/usr/local/go/bin
+
+        # Clone Singularity
+        git clone https://github.com/sylabs/singularity.git
+        cd singularity
+        ./mconfig
+        make -C builddir
         sudo make -C builddir install
 
     - name: Build Singularity image
