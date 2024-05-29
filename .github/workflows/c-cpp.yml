@@ -51,8 +51,8 @@ jobs:
         sudo tar -C /usr/local -xzf go1.16.5.linux-amd64.tar.gz
         export PATH=$PATH:/usr/local/go/bin
 
-        # Clone Singularity
-        git clone https://github.com/sylabs/singularity.git
+        # Clone Singularity with submodules
+        git clone --recurse-submodules https://github.com/sylabs/singularity.git
         cd singularity
         ./mconfig
         make -C builddir
@@ -84,8 +84,8 @@ jobs:
         sudo tar -C /usr/local -xzf go1.16.5.linux-amd64.tar.gz
         export PATH=$PATH:/usr/local/go/bin
 
-        # Clone Singularity
-        git clone https://github.com/sylabs/singularity.git
+        # Clone Singularity with submodules
+        git clone --recurse-submodules https://github.com/sylabs/singularity.git
         cd singularity
         ./mconfig
         make -C builddir
@@ -113,3 +113,4 @@ jobs:
         asset_path: ./matrix_multiplication.sif
         asset_name: matrix_multiplication.sif
         asset_content_type: application/octet-stream
+
