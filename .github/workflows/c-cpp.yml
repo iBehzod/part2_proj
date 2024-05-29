@@ -43,8 +43,16 @@ jobs:
 
     - name: Set up Singularity
       run: |
-        sudo apt-get update
-        sudo apt-get install -y singularity-container
+        sudo apt-get update && sudo apt-get install -y wget build-essential \
+          libseccomp-dev pkg-config squashfs-tools cryptsetup
+        
+        export VERSION=3.10.2 && # adjust this as necessary \
+        wget https://github.com/sylabs/singularity/releases/download/v$VERSION/singularity-$VERSION.tar.gz && \
+        tar -xzf singularity-$VERSION.tar.gz && \
+        cd singularity-$VERSION && \
+        ./mconfig && \
+        make -C builddir && \
+        sudo make -C builddir install
 
     - name: Build Singularity image
       run: |
@@ -64,8 +72,16 @@ jobs:
 
     - name: Set up Singularity
       run: |
-        sudo apt-get update
-        sudo apt-get install -y singularity-container
+        sudo apt-get update && sudo apt-get install -y wget build-essential \
+          libseccomp-dev pkg-config squashfs-tools cryptsetup
+        
+        export VERSION=3.10.2 && # adjust this as necessary \
+        wget https://github.com/sylabs/singularity/releases/download/v$VERSION/singularity-$VERSION.tar.gz && \
+        tar -xzf singularity-$VERSION.tar.gz && \
+        cd singularity-$VERSION && \
+        ./mconfig && \
+        make -C builddir && \
+        sudo make -C builddir install
 
     - name: Build Singularity image
       run: |
