@@ -2,7 +2,7 @@ Bootstrap: docker
 From: ubuntu:20.04
 
 %labels
-    Author YourName
+    Author iBekhzod
 
 %post
     # Install dependencies
@@ -10,14 +10,14 @@ From: ubuntu:20.04
 
 %files
     # Copy the entire project into the container
-    . /app
+    . /part2_proj
 
 %environment
-    export PATH=/app:$PATH
+    export PATH=/part2_proj:$PATH
 
 %runscript
     # Navigate to the build directory
-    cd /app
+    cd /part2_proj
     # Build the project
     ./build.sh
     # Run the tests
