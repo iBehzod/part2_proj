@@ -44,7 +44,8 @@ jobs:
     - name: Set up Singularity
       run: |
         sudo apt-get update && sudo apt-get install -y build-essential \
-          libseccomp-dev pkg-config squashfs-tools cryptsetup runc
+          libseccomp-dev pkg-config squashfs-tools cryptsetup runc \
+          fuse3 libfuse3-dev libfuse-dev
 
         # Install Go
         wget https://golang.org/dl/go1.16.5.linux-amd64.tar.gz
@@ -60,7 +61,7 @@ jobs:
 
     - name: Build Singularity image
       run: |
-        singularity build matrix_multiplication.sif Singularity.def
+        singularity build matrix_multiplication.sif $GITHUB_WORKSPACE/Singularity.def
 
     - name: Run tests in Singularity container
       run: |
@@ -77,7 +78,8 @@ jobs:
     - name: Set up Singularity
       run: |
         sudo apt-get update && sudo apt-get install -y build-essential \
-          libseccomp-dev pkg-config squashfs-tools cryptsetup runc
+          libseccomp-dev pkg-config squashfs-tools cryptsetup runc \
+          fuse3 libfuse3-dev libfuse-dev
 
         # Install Go
         wget https://golang.org/dl/go1.16.5.linux-amd64.tar.gz
@@ -93,7 +95,7 @@ jobs:
 
     - name: Build Singularity image
       run: |
-        singularity build matrix_multiplication.sif Singularity.def
+        singularity build matrix_multiplication.sif $GITHUB_WORKSPACE/Singularity.def
 
     - name: Create a release
       id: create_release
