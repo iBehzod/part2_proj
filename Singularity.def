@@ -1,0 +1,17 @@
+Bootstrap: docker
+From: ubuntu:20.04
+
+%post
+    apt-get update
+    apt-get install -y libgtest-dev cmake libopenmpi-dev openmpi-bin
+    cd /usr/src/gtest
+    cmake CMakeLists.txt
+    make
+    cp *.a /usr/lib
+    mkdir -p /opt/matrix_multiplication
+    cp /mnt/data/SE4HPC_project_part2/* /opt/matrix_multiplication/
+    cd /opt/matrix_multiplication
+    make
+
+%runscript
+    exec mpirun -np 4 ./matrix_multiplication matrixA.txt matrixB.txt
