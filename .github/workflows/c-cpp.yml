@@ -1,23 +1,17 @@
-name: CI Pipeline
+Bootstrap: docker
+From: ubuntu:20.04
 
-on: [push, pull_request]
+%post
+    apt-get update
+    apt-get install -y libgtest-dev cmake libopenmpi-dev openmpi-bin
+    cd /usr/src/gtest
+    cmake CMakeLists.txt
+    make
+    cp *.a /usr/lib
+    mkdir -p /opt/matrix_multiplication
+    cp /mnt/data/SE4HPC_project_part2/* /opt/matrix_multiplication/
+    cd /opt/matrix_multiplication
+    make
 
-jobs:
-  build:
-
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v2
-
-    - name: Setup CMake
-      uses: jwlawson/actions-setup-cmake@v1
-
-    - name: Configure CMake
-      run: cmake -S . -B build
-
-    - name: Build
-      run: cmake --build build
-
-    - name: Run Tests
-      run: ctest --test-dir build
+%runscript
+    exec mpirun -np 4 ./matrix_multiplication matrixA.txt matrixB.txt
